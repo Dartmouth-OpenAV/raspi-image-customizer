@@ -17,17 +17,17 @@ Download the img file for the RaspiOS version you want to customize. Then run th
 ```sudo docker run --rm -i --cap-add SYS_ADMIN --privileged --platform linux/amd64 --device /dev/loop0 --cpus="1" -e SCRIPT="echo test" --memory="500m" --name=raspi-image-customizer ghcr.io/dartmouth-openav/raspi-image-customizer:latest < ~/Downloads/20XX-XX-XX-raspios-bookworm-arm64-lite.img 2> ~/Downloads/20XX-XX-XX-raspios-bookworm-arm64-customized.img```
 
 > [!NOTE]  
-> the customizer mount the image on /tmp/root, so if you wanted to change /etc/my/config.json for example, your script should refer to it at /tmp/root/etc/my/config.json
+> The customizer mounts the image on /tmp/root, so if you wanted to change /etc/my/config.json for example, your script should refer to it at /tmp/root/etc/my/config.json
 
 > [!WARNING]
-> because the image comes out of the container on stderr, any errors that might have occured in your script will not be seen. Either your script is know to be flawless, or make sure you `head -1 20XX-XX-XX-raspios-bookworm-arm64-customized.img`, if everything went well you will see binary gibberish. Otherwise, you'll get the errors to be addressed. Yes, this is an ecclectic use of stderr, I don't remember why I did this years ago but I'm pretty sure there was a good reason :).
+> Because the image comes out of the container on stderr, any errors that might have occured in your script will not be visible on the terminal. Either your script is known to be flawless, or make sure you `head -1 20XX-XX-XX-raspios-bookworm-arm64-customized.img`. If everything went well you will see binary gibberish. Otherwise, you'll get the errors to be addressed. Yes, this is an eclectic use of stderr, I don't remember why I did this years ago but I'm pretty sure there was a good reason :).
 
 > [!WARNING]
-> you are running a container retrieved from the internet with `--cap-add SYS_ADMIN` and `--privileged`, this is necessary to mount the original RaspiOS image inside the container and make modifications to it. You should trust the respo/registry you want to grant such privileges to.
+> You are running a container retrieved from the internet with `--cap-add SYS_ADMIN` and `--privileged`, this is necessary to mount the original RaspiOS image inside the container and make modifications to it. You should trust the respo/registry you want to grant such privileges to.
 
 # Script Snippets
 
-Over the years I had to figure out how to do several things in this customizer, these are just RaspiOS commands but they took a bit to figure out sometimes, I hope they can be useful to others. Notably, the official Raspberry Pi Imager let you customize network settings, locale, and SSH service/keys on an image these days. So this project and some of the snippets are less useful. But it still doesn't let you know "user data" type scripts as one would when automating the deployments of VMs.
+Over the years I had to figure out how to do several things in this customizer, these are just RaspiOS commands but they took a bit to figure out sometimes, I hope they can be useful to others. Notably, the official Raspberry Pi Imager today let you customize network settings, locale, and SSH service/keys on an image. So this project and some of the snippets are less useful. But it still doesn't let you run "user data" type scripts as one would when automating the deployments of VMs.
 
 ## add NTP server
 
