@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [[ -n "$SCRIPT" || -f "/data/script.sh" ]]
+if [[ -n "$SCRIPT" || -f "/data/script.sh" || -n "$FIRSTBOOTSCRIPT" || -f "/data/firstbootscript.sh" ]]
 then
-    echo "> we have a script"
+    echo "> we have a script/firstbootscript"
 else
-    echo "> error: not script received, either specify the \$SCRIPT environment variable, or mount such that /data/script.sh exists"
+    echo "> error: not script or firstbootscript received, either specify the \$SCRIPT or \$FIRSTBOOTSCRIPT environment variables, or mount such that /data/script.sh or /data/firstbootscript.sh exists"
     exit 1
 fi
 
@@ -69,6 +69,34 @@ fi
 if [[ -f "/data/script.sh" ]]
 then
     bash /data/script.sh
+fi
+
+if [[ -n "$FIRSTBOOTSCRIPT" || -f "/data/firstbootscript.sh" ]]
+then
+    echo "> rc.local firstbootscript hook"
+    if [[ -f /tmp/root/etc/rc.local ]]
+    then
+        cp /tmp/root/etc/rc.local /tmp/root/etc/rc.local.bkp
+    fi
+    echo '#!/bin/sh -e' > /tmp/root/etc/rc.local
+    chmod 750 /tmp/root/etc/rc.local
+
+    if [[ -n "$FIRSTBOOTSCRIPT" ]]
+    then
+        echo "$FIRSTBOOTSCRIPT" >> /tmp/root/etc/rc.local
+    fi
+
+    if [[ -f "/data/firstbootscript.sh" ]]
+    then
+        cp /data/firstbootscript.sh /tmp/root
+        chmod 555 /tmp/root/firstbootscript.sh
+        echo "/firstbootscript.sh" >> /tmp/root/etc/rc.local
+        echo 'if [ $? -ne 0 ]; then exit 1; fi' >> /tmp/root/etc/rc.local
+        echo "rm -f /firstbootscript.sh" >> /tmp/root/etc/rc.local
+    fi
+
+    echo 'if [[ -f /tmp/root/etc/rc.local.bkp ]]; then cp /tmp/root/etc/rc.local.bkp /tmp/root/etc/rc.local; rm -f /tmp/root/etc/rc.local.bkp; else rm -f /etc/rc.local; fi' >> /tmp/root/etc/rc.local
+    echo "exit 0" >> /tmp/root/etc/rc.local
 fi
 
 echo "> unmounting root partition"
