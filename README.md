@@ -50,6 +50,15 @@ Over the years I had to figure out how to do several things in this customizer, 
 ## Set wifi locale
 ```raspi-config nonint do_wifi_country US```
 
+## Enable SSH
+```raspi-config nonint do_ssh 0```
+
+## Enable GPIO
+```raspi-config nonint do_rgpio 0```
+
+## Enable Camera
+```raspi-config nonint do_camera 0```
+
 ## Install Zerotier & join network
 ```echo "> installing Zerotier"
 curl -s https://install.zerotier.com/ | sudo bash
